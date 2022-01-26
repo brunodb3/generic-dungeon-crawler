@@ -1,11 +1,10 @@
 import * as PIXI from "pixi.js";
-
-import Movement from "./Movement";
+import Application from "./Application";
 
 export default class Floor extends PIXI.TilingSprite {
-  private movement: Movement;
+  private app: Application;
 
-  constructor(width?: number, height?: number) {
+  constructor(app: Application, width?: number, height?: number) {
     const texture = PIXI.Texture.from(`floor/floor_5.png`);
 
     if (!width) width = 100;
@@ -13,11 +12,12 @@ export default class Floor extends PIXI.TilingSprite {
 
     super(texture, width, height);
 
+    this.app = app;
+
     this.anchor.set(0.5);
     this.scale.set(5);
 
-    // negative velocity for inverted movement, as this is the floor and not the player
-    this.movement = new Movement({ velocity: -0.5 });
+    this.app.stage.addChild(this);
   }
 
   public onResize(width?: number, height?: number): void {
@@ -25,10 +25,11 @@ export default class Floor extends PIXI.TilingSprite {
     if (height) this.height = height;
   }
 
-  public onUpdate(delta: number): void {
-    const { vx, vy } = this.movement.getVelocityValues();
+  public gameLoop(delta: number): void {
+    const { vx, vy } = this.app.movement.getVelocityValues();
 
-    this.tilePosition.x += vx;
-    this.tilePosition.y += vy;
+    // negative velocity as this is the floor moving, not the player
+    this.tilePosition.x += -vx;
+    this.tilePosition.y += -vy;
   }
 }

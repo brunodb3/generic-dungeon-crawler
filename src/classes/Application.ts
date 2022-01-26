@@ -2,10 +2,12 @@ import * as PIXI from "pixi.js";
 
 import Floor from "./Floor";
 import Player from "./Player";
+import Movement from "./Movement";
 
 export default class Application extends PIXI.Application {
-  private floor!: Floor;
-  private player!: Player;
+  public floor!: Floor;
+  public player!: Player;
+  public movement!: Movement;
 
   constructor() {
     super({ width: window.innerWidth, height: window.innerHeight });
@@ -33,31 +35,28 @@ export default class Application extends PIXI.Application {
   private draw(): void {
     this.stage.sortableChildren = true;
 
-    this.floor = new Floor();
-    this.player = new Player();
+    this.floor = new Floor(this);
+    this.player = new Player(this);
+    this.movement = new Movement(this);
 
-    this.stage.addChild(this.floor);
-    this.stage.addChild(this.player);
+    this.movement.setVelocity(0.3);
 
     this.onResize();
 
-    this.ticker.add(this.onUpdate.bind(this));
+    this.ticker.add(this.gameLoop.bind(this));
   }
 
-  private onUpdate(delta: number): void {
-    this.floor.onUpdate(delta);
-    this.player.onUpdate(delta);
-
-    this.player.zIndex = this.floor.zIndex + 10;
-
-    this.player.position.set(this.renderer.width / 2, this.renderer.height / 2);
+  private gameLoop(delta: number): void {
+    this.floor.gameLoop(delta);
+    this.player.gameLoop(delta);
   }
 
   private onResize(): void {
     this.renderer.resize(window.innerWidth, window.innerHeight);
 
     const { width, height } = this.renderer;
-
     this.floor.onResize(width, height);
+
+    this.movement.onResize();
   }
 }

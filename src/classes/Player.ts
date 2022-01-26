@@ -1,14 +1,14 @@
 import * as PIXI from "pixi.js";
 
-import Movement from "./Movement";
+import Application from "./Application";
 
 export default class Player extends PIXI.AnimatedSprite {
-  private movement: Movement;
+  private app: Application;
 
   private idleTextures: PIXI.Texture<PIXI.Resource>[];
   private runningTextures: PIXI.Texture<PIXI.Resource>[];
 
-  constructor() {
+  constructor(app: Application) {
     const idleTextures = [];
     const runningTextures = [];
 
@@ -24,6 +24,8 @@ export default class Player extends PIXI.AnimatedSprite {
 
     super(idleTextures);
 
+    this.app = app;
+
     this.idleTextures = idleTextures;
     this.runningTextures = runningTextures;
 
@@ -31,13 +33,17 @@ export default class Player extends PIXI.AnimatedSprite {
     this.scale.set(5);
 
     this.animationSpeed = 0.15;
-    this.movement = new Movement();
+
+    this.app.stage.addChild(this);
+    this.zIndex = this.app.floor.zIndex + 10;
   }
 
-  onUpdate(delta: number) {
+  public gameLoop(delta: number): void {
+    this.position.set(window.innerWidth / 2, window.innerHeight / 2);
+
     if (!this.playing) this.play();
 
-    const { vx, vy } = this.movement.getVelocityValues();
+    const { vx, vy } = this.app.movement.getVelocityValues();
 
     if (vx !== 0 || vy !== 0) {
       if (this.textures !== this.runningTextures) {

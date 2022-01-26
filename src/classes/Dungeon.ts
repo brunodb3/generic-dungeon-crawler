@@ -13,7 +13,7 @@ export default class Dungeon extends PIXI.TilingSprite {
     this.scale.set(3);
   }
 
-  public onUpdate(delta: number): void {}
+  public gameLoop(delta: number): void {}
 
   // @todo: procedural dungeons with rot.js?
   // https://github.com/staff0rd/dungeon

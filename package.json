@@ -1,6 +1,6 @@
 {
   "name": "generic-dungeon-crawler",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A generic dungeon crawler (for now)",
   "author": "Bruno Duarte Brito <brunodb3@gmail.com>",
   "scripts": {
@@ -13,6 +13,7 @@
     "vite": "^2.7.2"
   },
   "dependencies": {
+    "pixi-virtual-joystick": "^0.4.1",
     "pixi.js": "^6.2.1"
   }
 }

@@ -1,22 +1,68 @@
 import Keyboard from "./Keyboard";
+import Application from "./Application";
+
+import {
+  Joystick,
+  Direction,
+  JoystickChangeEvent,
+} from "pixi-virtual-joystick";
+
+import isMobile from "../utils/isMobile";
 
 export default class Movement {
+  private app: Application;
+
   private vy: number = 0;
   private vx: number = 0;
 
   private mode: "wasd" | "arrows" | "both";
   private velocity: number;
 
-  constructor(options?: {
-    mode?: "wasd" | "arrows" | "both";
-    velocity?: number;
-  }) {
+  public joystick?: Joystick;
+
+  constructor(
+    app: Application,
+    options?: {
+      mode?: "wasd" | "arrows" | "both";
+      velocity?: number;
+    }
+  ) {
     const mode = options?.mode ? options.mode : "both";
     const velocity = options?.velocity ? options.velocity : 5;
 
+    this.app = app;
     this.mode = mode;
     this.velocity = velocity;
 
+    if (isMobile()) {
+      this.joystick = new Joystick({
+        onChange: this.onJoystickUpdate.bind(this),
+        onEnd: this.onJoystickEnd.bind(this),
+      });
+
+      this.app.stage.addChild(this.joystick);
+    }
+
+    this.setupKeyboard();
+  }
+
+  public getVelocityValues() {
+    return { vy: this.vy, vx: this.vx };
+  }
+
+  public getVelocity() {
+    return this.velocity;
+  }
+
+  public setVelocity(newVelocity: number) {
+    this.velocity = newVelocity;
+  }
+
+  public onResize() {
+    this.joystick?.position.set(100, window.innerHeight - 100);
+  }
+
+  private setupKeyboard() {
     switch (this.mode) {
       case "wasd":
         this.wasdMovement();
@@ -35,16 +81,50 @@ export default class Movement {
     }
   }
 
-  public getVelocityValues() {
-    return { vy: this.vy, vx: this.vx };
+  private onJoystickUpdate(data: JoystickChangeEvent) {
+    switch (data.direction) {
+      case Direction.LEFT:
+        this.vx = -this.velocity;
+        this.vy = 0;
+        break;
+      case Direction.RIGHT:
+        this.vx = this.velocity;
+        this.vy = 0;
+        break;
+      case Direction.TOP:
+        this.vy = -this.velocity;
+        this.vx = 0;
+        break;
+      case Direction.BOTTOM:
+        this.vy = this.velocity;
+        this.vx = 0;
+        break;
+      case Direction.TOP_LEFT:
+        this.vy = -this.velocity;
+        this.vx = -this.velocity;
+        break;
+      case Direction.TOP_RIGHT:
+        this.vy = -this.velocity;
+        this.vx = this.velocity;
+        break;
+      case Direction.BOTTOM_LEFT:
+        this.vy = this.velocity;
+        this.vx = -this.velocity;
+        break;
+      case Direction.BOTTOM_RIGHT:
+        this.vy = this.velocity;
+        this.vx = this.velocity;
+        break;
+      default:
+        this.vy = 0;
+        this.vx = 0;
+        break;
+    }
   }
 
-  public getVelocity() {
-    return this.velocity;
-  }
-
-  public setVelocity(newVelocity: number) {
-    this.velocity = newVelocity;
+  private onJoystickEnd() {
+    this.vy = 0;
+    this.vx = 0;
   }
 
   private wasdMovement() {
@@ -53,7 +133,7 @@ export default class Movement {
     const keyA = new Keyboard("KeyA");
     const keyD = new Keyboard("KeyD");
 
-    this.addMovement(keyW, keyS, keyA, keyD);
+    this.addKeyboardMovement(keyW, keyS, keyA, keyD);
   }
 
   private arrowsMovement() {
@@ -62,10 +142,10 @@ export default class Movement {
     const arrowLeft = new Keyboard("ArrowLeft");
     const arrowRight = new Keyboard("ArrowRight");
 
-    this.addMovement(arrowUp, arrowDown, arrowLeft, arrowRight);
+    this.addKeyboardMovement(arrowUp, arrowDown, arrowLeft, arrowRight);
   }
 
-  private addMovement(
+  private addKeyboardMovement(
     up: Keyboard,
     down: Keyboard,
     left: Keyboard,
