@@ -15,8 +15,7 @@ export class Button extends PIXI.Sprite {
     this.interactive = true;
 
     this.anchor.set(0.5);
-    this.width = 500;
-    this.height = 150;
+    this.scale.set(3);
 
     this.text = new PIXI.Text(value, {
       fontSize: "100pt",

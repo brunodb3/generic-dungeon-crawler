@@ -38,5 +38,6 @@ export class Audio {
 
     window.addEventListener("click", playIfPaused);
     window.addEventListener("keydown", playIfPaused);
+    window.addEventListener("touchstart", playIfPaused);
   }
 }

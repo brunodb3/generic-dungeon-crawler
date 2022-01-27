@@ -18,7 +18,7 @@ export class Menu extends Scene {
 
     this.gameTitle = new PIXI.Sprite(PIXI.Texture.from("menu_title"));
     this.gameTitle.anchor.set(0.5);
-    this.gameTitle.scale.set(0.3);
+    this.gameTitle.scale.set(0.2);
 
     this.addChild(this.background);
     this.addChild(this.gameTitle);
