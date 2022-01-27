@@ -12,7 +12,13 @@
     "noEmit": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noImplicitReturns": true
+    "noImplicitReturns": true,
+    "baseUrl": "src",
+    "paths": {
+      "@classes": ["classes/"],
+      "@scenes": ["scenes/"],
+      "@utils": ["utils/"]
+    }
   },
   "include": ["./src"]
 }

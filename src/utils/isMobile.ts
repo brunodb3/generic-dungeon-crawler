@@ -1,4 +1,4 @@
-export default function isMobile() {
+export function isMobile() {
   // https://stackoverflow.com/a/11381730
   let check = false;
   (function (a) {
